@@ -234,6 +234,8 @@ dependencies = [
 name = "rust-vaults"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "wasm-bindgen-futures",
  "yew",
 ]
 

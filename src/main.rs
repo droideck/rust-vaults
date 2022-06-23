@@ -1,81 +1,83 @@
 use yew::prelude::*;
+use serde::Deserialize;
 
-#[derive(Clone, PartialEq)]
-struct Item {
+#[derive(Clone, PartialEq, Deserialize)]
+struct Monster {
     id: usize,
     title: String,
+
 }
 
 #[derive(Properties, PartialEq)]
-struct ItemListProps {
-    items: Vec<Item>,
-    on_click: Callback<Item>
+struct MonsterListProps {
+    monsters: Vec<Monster>,
+    on_click: Callback<Monster>
 }
 
 #[derive(Clone, Properties, PartialEq)]
-struct ItemDetailsProps {
-    item: Item,
+struct MonsterDetailsProps {
+    monster: Monster,
 }
 
-#[function_component(ItemDetails)]
-fn item_details(ItemDetailsProps { item }: &ItemDetailsProps) -> Html {
+#[function_component(MonsterDetails)]
+fn monster_details(MonsterDetailsProps { monster }: &MonsterDetailsProps) -> Html {
     html! {
         <div>
-            <h3>{ item.title.clone() }</h3>
-            <img src="https://via.placeholder.com/640x360.png?text=Video+Player+Placeholder" alt="video thumbnail" />
+            <h3>{ monster.title.clone() }</h3>
+            <img src={format!("https://2e.aonprd.com/Images/Monsters/{}.png", monster.title.clone())} />
         </div>
     }
 }
 
-#[function_component(ItemList)]
-fn items_list(ItemListProps { items, on_click }: &ItemListProps) -> Html {
+#[function_component(MonsterList)]
+fn monsters_list(MonsterListProps { monsters, on_click }: &MonsterListProps) -> Html {
     let on_click = on_click.clone();
-    items.iter().map(|item| {
-        let on_item_select = {
+    monsters.iter().map(|monster| {
+        let on_monster_select = {
             let on_click = on_click.clone();
-            let item = item.clone();
+            let monster = monster.clone();
             Callback::from(move |_| {
-                on_click.emit(item.clone())
+                on_click.emit(monster.clone())
             })
         };
         html! {
-            <p onclick={on_item_select}>{format!("Name {}: [ID: {}]", item.title, item.id)}</p>
+            <p onclick={on_monster_select}>{format!("Name: {} [ID: {}]", monster.title, monster.id)}</p>
         }
     }).collect()
 }
 
 #[function_component(App)]
 fn app() -> Html {
-    let items = vec![
-        Item {
+    let monsters = vec![
+        Monster {
             id: 1,
-            title: "Armor".to_string(),
+            title: "Unseen Servant".to_string(),
         },
-        Item {
-            id: 2,
-            title: "Book".to_string(),
+        Monster {
+            id: 541,
+            title: "Akata".to_string(),
         },
-        Item {
-            id: 3,
-            title: "Dice set".to_string(),
+        Monster {
+            id: 1206,
+            title: "Kappa".to_string(),
         },
     ];
-    let selected_item = use_state(|| None);
-    let on_item_select = {
-        let selected_item = selected_item.clone();
-        Callback::from(move |item: Item| {
-            selected_item.set(Some(item))
+    let selected_monster = use_state(|| None);
+    let on_monster_select = {
+        let selected_monster = selected_monster.clone();
+        Callback::from(move |monster: Monster| {
+            selected_monster.set(Some(monster))
         })
     };
-    let details = selected_item.as_ref().map(|item| html! {
-        <ItemDetails item={item.clone()} />
+    let details = selected_monster.as_ref().map(|monster| html! {
+        <MonsterDetails monster={monster.clone()} />
     });
 
     html! {
     <>
-        <h1>{ "Inventory" }</h1>
+        <h1>{ "Monsters" }</h1>
         <div>
-            <ItemList items={items} on_click={on_item_select.clone()} />
+            <MonsterList monsters={monsters} on_click={on_monster_select.clone()} />
         </div>
         { for details }
     </>
